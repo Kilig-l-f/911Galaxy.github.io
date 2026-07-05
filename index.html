@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>911星球 · 城市故事</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+            background: url('images/xingkong.jpg') center/cover no-repeat fixed;
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px 16px 40px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 39, 0.5);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px 28px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -60%;
+            width: 220%;
+            height: 220%;
+            background: radial-gradient(circle at 30% 40%, rgba(255, 215, 0, 0.05), transparent 70%);
+            pointer-events: none;
+        }
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerGold 5s linear infinite;
+            position: relative;
+        }
+        @keyframes shimmerGold {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 6px;
+            letter-spacing: 4px;
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        .view {
+            display: none;
+            animation: fadeSlideUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .view.active { display: block; }
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateY(24px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .nav-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+        }
+        .nav-header .back-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .nav-header .back-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(-4px);
+        }
+        .nav-header .back-btn .arrow { font-size: 1.2rem; }
+        .nav-header .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 100px;
+        }
+        .nav-header .title span { color: #ffd700; }
+        .nav-header .badge {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 4px 14px;
+            border-radius: 30px;
+            color: rgba(255, 255, 255, 0.4);
+            flex-shrink: 0;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+            margin-bottom: 16px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .filter-bar .filter-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-right: 2px;
+        }
+        .filter-bar .filter-btn {
+            padding: 4px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-bar .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+        .filter-bar .filter-btn.active {
+            background: #ffd700;
+            color: #1a1040;
+            font-weight: 600;
+            border-color: #ffd700;
+        }
+        .filter-bar .search-box {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0 14px;
+            transition: border-color 0.3s;
+        }
+        .filter-bar .search-box:focus-within {
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.03);
+        }
+        .filter-bar .search-box .search-icon {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            margin-right: 8px;
+        }
+        .filter-bar .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #fff;
+            padding: 8px 0;
+            font-size: 0.85rem;
+            outline: none;
+            min-width: 60px;
+        }
+        .filter-bar .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.75rem;
+        }
+        .filter-bar .search-box .clear-btn {
+            color: rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px;
+            transition: color 0.3s;
+            display: none;
+        }
+        .filter-bar .search-box .clear-btn.visible {
+            display: block;
+        }
+        .filter-bar .search-box .clear-btn:hover {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .filter-bar .filter-count {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+        }
+
+        .province-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 4px 0;
+        }
+        .province-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 22px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .province-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.06), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .province-item:hover {
+            transform: translateX(6px) scale(1.01);
+            border-color: rgba(255, 215, 0, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .province-item:hover::before { opacity: 1; }
+        .province-item .province-emoji {
+            font-size: 1.8rem;
+            width: 44px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .province-item .province-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            flex: 1;
+        }
+        .province-item .province-count {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 14px;
+            border-radius: 30px;
+            flex-shrink: 0;
+        }
+        .province-item .province-arrow {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s;
+        }
+        .province-item:hover .province-arrow {
+            transform: translateX(4px);
+            color: rgba(255, 215, 0, 0.5);
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+        .group-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            padding: 24px 12px 20px;
+            position: relative;
+        }
+        .group-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 80%, rgba(255, 215, 0, 0.05), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .group-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+        }
+        .group-card:hover::after { opacity: 1; }
+        .group-card .group-icon { font-size: 3rem; display: block; margin-bottom: 8px; }
+        .group-card .group-name { font-size: 1rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); }
+        .group-card .group-count { font-size: 0.7rem; color: rgba(255, 255, 255, 0.35); margin-top: 4px; }
+
+        .city-card {
+            display: flex;
+            align-items: stretch;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            position: relative;
+            min-height: 120px;
+            opacity: 1;
+        }
+        .city-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+        .city-card.read {
+            opacity: 0.55;
+            filter: grayscale(0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .city-card.read:hover {
+            opacity: 0.7;
+            transform: translateY(-2px) scale(1.005);
+        }
+        .city-card .read-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(255, 215, 0, 0.15);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.55rem;
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 2;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        .city-card.read .read-badge {
+            opacity: 1;
+        }
+        .city-card .city-preview {
+            width: 120px;
+            min-width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .city-card .city-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .city-card .city-preview .preview-emoji {
+            font-size: 2.8rem;
+            opacity: 0.4;
+        }
+        .city-card .city-preview .flower-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 2px 6px;
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+        .city-card .city-info {
+            flex: 1;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .city-card .city-info .city-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 215, 0, 0.6);
+            margin-bottom: 2px;
+        }
+        .city-card .city-info .city-text {
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .city-card .city-info .city-id {
+            font-size: 0.6rem;
+            color: #ffd700;
+            margin-top: 4px;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .detail-header .back-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .detail-header .back-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(-4px);
+        }
+        .detail-header .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .detail-header .title span { color: #ffd700; }
+        .detail-header .id-badge {
+            font-size: 0.75rem;
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 4px 14px;
+            border-radius: 30px;
+            color: #ffd700;
+            font-weight: 600;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .detail-content {
+            display: flex;
+            align-items: stretch;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            min-height: 200px;
+        }
+        .detail-content .detail-image {
+            width: 280px;
+            min-width: 280px;
+            height: 280px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .detail-content .detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .detail-content .detail-image .placeholder {
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.1);
+        }
+        .detail-content .detail-image .flower-name-detail {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .detail-content .detail-text {
+            flex: 1;
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+            position: relative;
+            min-width: 0;
+            overflow: hidden;
+        }
+        .detail-content .detail-text .quote-symbol {
+            font-size: 2.4rem;
+            color: #ffd700;
+            opacity: 0.2;
+            line-height: 1;
+        }
+        .detail-content .detail-text .quote-text {
+            font-style: italic;
+            margin: 4px 0 10px;
+        }
+        .detail-content .detail-text .city-label {
+            font-style: normal;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+        .detail-content .detail-text .city-id {
+            display: inline-block;
+            margin-top: 8px;
+            font-style: normal;
+            font-size: 0.85rem;
+            background: rgba(255, 215, 0, 0.08);
+            padding: 4px 18px;
+            border-radius: 30px;
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            align-self: flex-start;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+        .gallery-item {
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            position: relative;
+            opacity: 1;
+        }
+        .gallery-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+        .gallery-item.read {
+            opacity: 0.55;
+            filter: grayscale(0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .gallery-item.read:hover {
+            opacity: 0.7;
+            transform: translateY(-2px) scale(1.005);
+        }
+        .gallery-item .read-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(255, 215, 0, 0.15);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.55rem;
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 2;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        .gallery-item.read .read-badge {
+            opacity: 1;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-item .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        .image-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 39, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        .image-modal.show {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .image-modal .modal-close {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2001;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .image-modal .modal-close:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: rotate(90deg);
+        }
+        .image-modal .modal-image {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 24px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+            animation: zoomIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes zoomIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 16, 48, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 28px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 215, 0, 0.12);
+            color: #ffd700;
+            font-size: 0.9rem;
+            z-index: 999;
+            animation: toastIn 0.4s ease, toastOut 0.4s ease 2.8s forwards;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes toastIn {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.9); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+        }
+        @keyframes toastOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.95); }
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 50px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+        .music-control button {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 1.4rem;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.3s;
+        }
+        .music-control button:hover {
+            transform: scale(1.15);
+        }
+        .music-control .status {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 820px) {
+            .grid-4 { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .detail-content .detail-image { width: 200px; min-width: 200px; height: 200px; }
+            .filter-bar { padding: 8px 12px; gap: 6px 10px; }
+            .filter-bar .search-box { min-width: 100px; }
+        }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2.2rem; letter-spacing: 4px; }
+            .header .subtitle { font-size: 0.9rem; letter-spacing: 2px; }
+            .grid-4 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .city-card .city-preview { width: 80px; min-width: 80px; height: 80px; }
+            .city-card .city-info { padding: 8px 10px; }
+            .city-card .city-info .city-name { font-size: 0.65rem; }
+            .city-card .city-info .city-text { font-size: 0.65rem; -webkit-line-clamp: 2; }
+            .city-card .city-info .city-id { font-size: 0.5rem; }
+            .city-card .city-preview .flower-name { font-size: 0.45rem; }
+            .detail-content { flex-direction: column; }
+            .detail-content .detail-image { width: 100%; min-width: unset; height: 200px; }
+            .detail-content .detail-text { padding: 18px 16px 22px; font-size: 0.95rem; }
+            .province-item { padding: 14px 18px; }
+            .province-item .province-emoji { font-size: 1.5rem; width: 38px; }
+            .province-item .province-name { font-size: 0.95rem; }
+            .nav-header .title { font-size: 1.1rem; }
+            .detail-header .title { font-size: 1.1rem; }
+            .nav-header .back-btn, .detail-header .back-btn { font-size: 0.7rem; padding: 6px 12px; }
+            .detail-header .id-badge { font-size: 0.65rem; padding: 2px 10px; }
+            .music-control { padding: 6px 12px; bottom: 12px; right: 12px; }
+            .music-control button { font-size: 1.1rem; }
+            .music-control .status { font-size: 0.55rem; }
+            .filter-bar .filter-btn { font-size: 0.65rem; padding: 3px 12px; }
+            .filter-bar .search-box input { font-size: 0.75rem; padding: 6px 0; }
+            .filter-bar .search-box .search-icon { font-size: 0.75rem; }
+            .filter-bar .filter-count { font-size: 0.6rem; }
+            .image-modal .modal-close { top: 16px; right: 16px; width: 40px; height: 40px; font-size: 1.2rem; }
+            .image-modal .modal-image { max-width: 95%; max-height: 75vh; }
+        }
+        @media (max-width: 420px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .city-card .city-preview { width: 64px; min-width: 64px; height: 64px; }
+            .city-card .city-info .city-name { font-size: 0.55rem; }
+            .city-card .city-info .city-text { font-size: 0.55rem; -webkit-line-clamp: 2; }
+            .city-card .city-info .city-id { font-size: 0.45rem; }
+            .city-card .city-preview .flower-name { font-size: 0.4rem; }
+            .detail-content .detail-image { height: 160px; }
+            .filter-bar .filter-btn { font-size: 0.6rem; padding: 2px 10px; }
+            .filter-bar .search-box { min-width: 80px; padding: 0 10px; }
+            .filter-bar .search-box input { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="music-control" id="musicControl">
+        <audio id="bgMusic" loop volume="0.3">
+            <source src="bgm.mp3/dxy.mp3" type="audio/mpeg">
+        </audio>
+        <button id="musicBtn">🔊</button>
+        <span class="status" id="musicStatus">点击播放</span>
+    </div>
+
+    <div class="container">
+
+        <header class="header">
+            <h1>🌍 911星球</h1>
+            <div class="subtitle">✦ 熠熠星光倾入漫漫银河 ✦</div>
+        </header>
+
+        <div class="view active" id="viewProvince">
+            <div class="province-list" id="provinceList"></div>
+        </div>
+
+        <div class="view" id="viewGroup">
+            <div class="nav-header">
+                <button class="back-btn" id="backToProvince"><span class="arrow">←</span> 返回</button>
+                <div class="title" id="groupTitle"><span>📍</span> 省份名</div>
+                <span class="badge" id="groupBadge">0 个分组</span>
+            </div>
+            <div class="grid-4" id="groupGrid"></div>
+        </div>
+
+        <div class="view" id="viewCity">
+            <div class="nav-header">
+                <button class="back-btn" id="backToGroup"><span class="arrow">←</span> 返回</button>
+                <div class="title" id="cityTitle"><span>📂</span> 分组名</div>
+                <span class="badge" id="cityBadge">0 个投稿</span>
+            </div>
+            <div class="filter-bar" id="filterBar">
+                <span class="filter-label">📌</span>
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="unread">未看</button>
+                <button class="filter-btn" data-filter="read">已看</button>
+                <div class="search-box" id="searchBox">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="搜索城市名或 ID..." />
+                    <span class="clear-btn" id="clearSearch">✕</span>
+                </div>
+                <span class="filter-count" id="filterCount"></span>
+            </div>
+            <div class="grid-4" id="cityGrid"></div>
+        </div>
+
+        <div class="view" id="viewDetail">
+            <div class="detail-header">
+                <button class="back-btn" id="backToCity"><span class="arrow">←</span> 返回</button>
+                <div class="title" id="detailTitle"><span>🏙️</span> 城市名</div>
+                <span class="id-badge" id="detailIdBadge">ID: --</span>
+            </div>
+            <div class="detail-content">
+                <div class="detail-image" id="detailImage">
+                    <img id="detailImg" src="" alt="城市风景" />
+                    <span class="placeholder" id="detailPlaceholder">🖼️</span>
+                </div>
+                <div class="detail-text" id="detailText">
+                    <div class="quote-symbol">"</div>
+                    <div class="quote-text" id="detailQuote">这里显示城市的一句话描述...</div>
+                    <span class="city-label" id="detailLabel">—— 来自 911星球 粉丝投稿</span>
+                    <div class="city-id" id="detailIdDisplay">ID: --</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="view" id="viewGallery">
+            <div class="nav-header">
+                <button class="back-btn" id="backToProvinceFromGallery"><span class="arrow">←</span> 返回</button>
+                <div class="title" id="galleryTitle"><span>🖼️</span> 一些评论</div>
+                <span class="badge" id="galleryBadge">263 张图片</span>
+            </div>
+            <div class="filter-bar" id="galleryFilterBar">
+                <span class="filter-label">📌</span>
+                <button class="filter-btn active" data-filter="all" data-gallery="true">全部</button>
+                <button class="filter-btn" data-filter="unread" data-gallery="true">未看</button>
+                <button class="filter-btn" data-filter="read" data-gallery="true">已看</button>
+                <span class="filter-count" id="galleryFilterCount"></span>
+            </div>
+            <div class="gallery-grid" id="galleryGrid"></div>
+        </div>
+
+    </div>
+
+    <div class="image-modal" id="imageModal">
+        <button class="modal-close" id="modalClose">✕</button>
+        <img class="modal-image" id="modalImage" src="" alt="评论图片" />
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        // ================================================================
+        //  LLY 数据（35条）
+        // ================================================================
+
+        const LLY_DATA = [
+            { province: "山东省", flower: "牡丹", flowerMeaning: "福运绵长，富贵常伴", image: "mudan.jpg", text: "祝大家天天开心幸福快乐好运连连财运滚滚心想事成身体健康霉运走开。" },
+            { province: "江苏省", flower: "茉莉", flowerMeaning: "本心澄澈，独绽风华", image: "molihua.jpg", text: "你当然可以成为最好的自己，这是必然的。" },
+            { province: "浙江省", flower: "兰花", flowerMeaning: "知己相逢，温润相守", image: "lanhua.jpg", text: "我很幸运，我遇见了你们，不管谁说，我始终都认为我的评论区是最温暖的，我喜欢这里，我是开心的。" },
+            { province: "福建省", flower: "水仙", flowerMeaning: "通透自持，接纳缺憾", image: "shuixianhua.jpg", text: "没有完美的人，没有人能永远满足所有人的要求，不要太过期待就不会有落差。" },
+            { province: "广东省", flower: "木棉", flowerMeaning: "热烈向上，前程坦荡", image: "mumianhua.jpg", text: "祝评论区的大家全部心想事成身体健康，好运连连，想要即得到，一帆风顺越来越优秀，越来越强大，主宰自己的人生，钱多多。" },
+            { province: "海南省", flower: "三角梅", flowerMeaning: "惦念常在，岁岁欢愉", image: "sanjiaomei.jpg", text: "我不在也要开心，等我回来给你们更好玩的贴。" },
+            { province: "湖南省", flower: "芙蓉", flowerMeaning: "风华夺目，自带光彩", image: "furong.jpg", text: "你们就是最棒的。" },
+            { province: "湖北省", flower: "梅花", flowerMeaning: "赤诚温柔，惜遇知己", image: "meihua.jpg", text: "善良的人总会有柔软被触动，很庆幸能遇见你们，很幸运能认识你们，我很开心，谢谢大家。" },
+            { province: "江西省", flower: "杜鹃", flowerMeaning: "热烈自爱，自信坦荡", image: "dujuanhua.jpg", text: "你们也不知道自己有多好，这点要多向我学习，我知道我自己三观正人好，别吝啬对自己的夸奖。" },
+            { province: "河南省", flower: "腊梅", flowerMeaning: "无声守候，温柔长随", image: "lamei.jpg", text: "还有那些，不怎么出来，默默关注的朋友们，谢谢你们用另一种方式存在。" },
+            { province: "河北省", flower: "太平花", flowerMeaning: "自洽心安，惜己温柔，而后予人善意", image: "taipinghua.jpg", text: "先有自我才有爱，不论是谁，爱人先爱己。" },
+            { province: "四川省", flower: "木芙蓉", flowerMeaning: "自生星光，自成风景", image: "mufurong.jpg", text: "大家多肯定自己，你们自己本就散发着光啊，先有你们自己，才能有那些爱，何其厉害。" },
+            { province: "贵州省", flower: "杜鹃", flowerMeaning: "相逢无忧，自在喜乐", image: "dujuanhua②.jpg", text: "特别自豪能认识大家，我希望大家认识我能越来越开心，永远开心，没有烦恼没有失落。" },
+            { province: "山西省", flower: "榆叶梅", flowerMeaning: "年年相伴，心意不改", image: "yuyemei.jpg", text: "新年快乐，有幸相识偏爱是我永恒的信仰。" },
+            { province: "安徽省", flower: "黄山杜鹃", flowerMeaning: "赤诚相逢，温柔初遇", image: "huangshandujuanhua.jpg", text: "你好，我是Ily，很高兴认识你。" },
+            { province: "陕西省", flower: "石榴花", flowerMeaning: "清空愁绪，与过往和解", image: "shiliuhua.jpg", text: "很难受的话可以尝试一个人哭一场，哭出来会好很多，把情绪散发出去，再告诉自己已经过去了，坏的东西被你丢掉了，再教给你一种方法，找一张纸，一支笔，把不开心写上去，然后撕碎团成团丢进垃圾桶。" },
+            { province: "甘肃省", flower: "玫瑰", flowerMeaning: "远离内耗，纯粹欢愉", image: "meiguihua.jpg", text: "我们大家要的都是开心快乐，而不是被消耗。" },
+            { province: "青海省", flower: "郁金香", flowerMeaning: "长久相守，不离不弃", image: "yujinxiang.jpg", text: "不走，我在，号在，西西里里所有人都在。" },
+            { province: "台湾省", flower: "蝴蝶兰", flowerMeaning: "鼎力相伴，双向奔赴", image: "hudielan.jpg", text: "谢谢大家愿意了解我，支持我。" },
+            { province: "辽宁省", flower: "天女花", flowerMeaning: "行胜于言，静水流深", image: "tiannvhua.jpg", text: "我习惯做到再说吧，也没什么说的。" },
+            { province: "北京市", flower: "月季", flowerMeaning: "四季相守，初心不改", image: "yuejihua.jpg", text: "谢谢一直留下的大家，如果没有你们的支持，我大概早离开了。" },
+            { province: "上海市", flower: "玉兰", flowerMeaning: "双向暖意，真心回馈", image: "yulan.jpg", text: "你们给我很多感动，也回你们一个，不成敬意。" },
+            { province: "天津市", flower: "月季", flowerMeaning: "奉若心尖，万般珍视", image: "yuejihua②.jpg", text: "粉丝是天有问题吗没问题。" },
+            { province: "重庆市", flower: "山茶花", flowerMeaning: "星海相逢，浪漫际遇", image: "shanchahua.jpg", text: "对了歌是小虎队的，（星星的约会），因为说过大家是星辰，很幸运认识大家，在网上认识那么多朋友，很开心。" },
+            { province: "内蒙古自治区", flower: "马兰花", flowerMeaning: "纯粹圣洁，人间星光", image: "malanhua.jpg", text: "神的女孩，不是说我是神，是说你们是天使，最美好的象征。" },
+            { province: "广西壮族自治区", flower: "桂花", flowerMeaning: "人海拾光，各有亮色", image: "guihua.jpg", text: "我有一双发现美的眼睛，所以我发现了你们。" },
+            { province: "宁夏回族自治区", flower: "马兰花", flowerMeaning: "并肩荣光，底气相伴", image: "malanhua②.jpg", text: "我的粉丝兼网络好友们也是我的骄傲。" },
+            { province: "新疆维吾尔自治区", flower: "雪莲花", flowerMeaning: "珍贵长久，默默付出", image: "xuelianhua.jpg", text: "谢谢大家的每天的先先贝和五角星辛苦了。" },
+            { province: "西藏自治区", flower: "格桑花", flowerMeaning: "无可替代，满分馈赠", image: "gesanghua.jpg", text: "你们是最牛最离害的一届米分。" },
+            { province: "香港特别行政区", flower: "紫荆花", flowerMeaning: "命中邂逅，人海难得相逢", image: "zijinghua.jpg", text: "这首歌叫 多幸运，里面的一些歌词很适合来形容网上我与大家的相遇相识大家好我是911，很幸运认识大家。" },
+            { province: "澳门特别行政区", flower: "莲花", flowerMeaning: "心灵港湾，失意归处", image: "lianhua.jpg", text: "谢谢开心的时候来看看，不开心的时候多来看看。" },
+            { province: "吉林省", flower: "君子兰", flowerMeaning: "拨云见雾，向阳自愈", image: "junzilan.jpg", text: "加油，不好的人和事都会过去。" },
+            { province: "黑龙江省", flower: "丁香", flowerMeaning: "驱散愁云，雨后新生", image: "dingxianghua.jpg", text: "大家都不要忧虑，多想想开心的事情，没什么过不去的，请告诉自己，你一直都是最独特的存在，一时的阴霾只是一场小雨小雨过后会开出最美的花，那是专属于你的风景。" },
+            { province: "云南省", flower: "山茶花", flowerMeaning: "情深意重，厚谊长存", image: "shanchahua②.jpg", text: "我将把2025年11.22作为我一生的良药，苦了累了就看看这些视频与帖子，永远都在治愈我，我收到的祝福十个视频也放不下，为什么我的粉丝都会护着我，是因为她们本身就是美好的代名词，于我来说不是粉丝与博主，更是朋友之间的互动，谢谢你们一直在，从未离开。" },
+            { province: "马来西亚", flower: "扶桑花", flowerMeaning: "步步相随，岁岁欢喜", image: "fusanghua.jpg", text: "我以前说你们是我的小跟班，我走哪里你们跟到哪里，这本身就是幸福开心的一种表达。" }
+        ];
+
+        // ================================================================
+        //  评论图片（263张）
+        // ================================================================
+
+        const GALLERY_IMAGES = [];
+        for (let i = 1; i <= 263; i++) {
+            const num = i.toString().padStart(3, '0');
+            GALLERY_IMAGES.push({ image: `images/comment${num}.jpg` });
+        }
+
+        // ================================================================
+        //  普通省份数据（已合并，每个省份只有三个分组）
+        // ================================================================
+
+        const PROVINCE_DATA = {
+            "广西壮族自治区": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "广西", image: "images/Kilig.jpg", text: "很开心能认识你这位朋友，愿生活予你钝感，对锋利世界保持恰好的天真。天天开心！每天睡个好觉！", id: "Kilig." }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "广西", image: "images/Kilig.jpg", text: "认识大家真的好幸福！喜欢大家细腻的想法和闪亮的心，大家天天开心！事事顺利！熠熠向前，事事登高。", id: "Kilig." }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "广西", image: "images/Kilig.jpg", text: "你们咋都那么有才！每一位都很善良温柔，很高兴认识你们！愿你们一切尽意，百事从欢。", id: "Kilig." }]
+                }]
+            },
+            "北京市": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "北京市", image: "images/zhimahaitai.jpg", text: "希望你天天开心一切顺利每天睡个好觉", id: "芝麻海苔" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "北京市", image: "images/zhimahaitai.jpg", text: "认识大家超级开心幸福☺️", id: "芝麻海苔" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "北京市", image: "images/zhimahaitai.jpg", text: "每个人都非常厉害！！", id: "芝麻海苔" }]
+                }]
+            },
+            "安徽省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "💛",
+                    cities: [
+                        { name: "安徽", image: "images/Larsfan.jpg", text: "很高兴在短短300多万天的人生里遇见你，认识你，像是阳光让每天的生活都充满了动力和活力！", id: "Lars.凡" },
+                        { name: "安庆", image: "images/xixifusi.jpg", text: "亲爱的小陆先生，总有山不青总有月不圆，愿你不被世俗标签束缚永远自由开心，好好生活，我们一直在。", id: "西西弗斯推我上学" },
+                        { name: "合肥", image: "images/naijilaiye.jpg", text: "老大你真的是一个很真诚善良高大帅气臭屁傲娇才华抽象搞笑各种优点于一身的lly，我们就是很喜欢你，要做很久很久的好朋友！", id: "奶鸡来也" },
+                        { name: "安徽", image: "images/bushousanshijin.jpg", text: "lly你真的是个很好很好的人，是个超级超级棒的星球领主，祝你天天开心，每日好眠！", id: "不瘦三十斤不改名" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "安徽", image: "images/Larsfan.jpg", text: "何其有幸能够认识这么多志同道合的娅粉，虽然我们身处世界各地，却可以成为无话不谈的好朋友！", id: "Lars.凡" },
+                        { name: "安庆", image: "images/xixifusi.jpg", text: "这世界上有万般人，恰恰我们相逢，这是天定的缘分。", id: "西西弗斯推我上学" },
+                        { name: "合肥", image: "images/naijilaiye.jpg", text: "从未在互联网上感受到过如此温暖和谐友爱的大家庭，每个人都很温柔很好我超爱你们！！", id: "奶鸡来也" },
+                        { name: "安徽", image: "images/bushousanshijin.jpg", text: "遇见你们实在是一件再好不过的事情了，我真的好喜欢好喜欢大家！愿神明保佑一切好事降临！", id: "不瘦三十斤不改名" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "安徽", image: "images/Larsfan.jpg", text: "仅从大帅笔下了解到的你们就觉得是一群很好的人，无论是谈吐还是性格都是很礼貌很温柔，希望大家可以天天开心，每天都幸福！", id: "Lars.凡" },
+                        { name: "安庆", image: "images/xixifusi.jpg", text: "祝愿你们一直开心快乐，有说不完的话，聚不完的餐和走不散的以后。", id: "西西弗斯推我上学" },
+                        { name: "合肥", image: "images/naijilaiye.jpg", text: "那就祝大家都身体健康，心想事成，不留遗憾。", id: "奶鸡来也" },
+                        { name: "安徽", image: "images/bushousanshijin.jpg", text: "谢谢大家带来的歌声，超级温暖好听，祝大家万事顺遂，平安喜乐！", id: "不瘦三十斤不改名" }
+                    ]
+                }]
+            },
+            "湖北省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "湖北", image: "images/wwwww.jpg", text: "像风遇见云，像夜遇见星，遇见你是我今年最幸运的事，lly希望你一直自由而快乐！", id: "wwwww" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "湖北", image: "images/wwwww.jpg", text: "祝我的朋友们：东南西北皆顺路，春夏秋冬都平安！", id: "wwwww" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "湖北", image: "images/wwwww.jpg", text: "希望西西里里的大家生活顺遂，幸福快乐，所行皆坦途，所遇皆温柔。", id: "wwwww" }]
+                }]
+            },
+            "山东省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "山东", image: "images/guozhijun.jpg", text: "鲤鱼，你只管大胆做独一无二的自己，前路繁花似锦，我会一直一直陪着你。", id: "朕乃一果汁君" },
+                        { name: "山东", image: "images/xiaoyugan.jpg", text: "要好好吃饭好好睡觉好好休息好好生活，如果人类是一棵🌳，那我希望你枝繁叶茂。", id: "干炸小鱼干" },
+                        { name: "日照", image: "images/juhao.jpg", text: "庆幸和帅气抽象幽默有趣的莉莉娅遇见，希望一切事情都比你所期待的要更好，希望快乐每天都能找到你～老大永远是最好的", id: "。。。。。。。！" },
+                        { name: "山东", image: "images/y.jpg", text: "最棒的lly，世界上当然有惊喜，你就是于我而言最大的惊喜！谢谢你成为我生命里的一束光，谢谢你一直在🥺我也会一直在！请永远相信，最好的你一定会被一切美好与幸福围绕🥰", id: "Y." },
+                        { name: "山东", image: "images/tiancaibeibei.jpg", text: "赞美之言似乎不足以形容你的好，那我就祝你幸运常伴身边，夜夜舒心入眠。", id: "天才贝贝" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "山东", image: "images/guozhijun.jpg", text: "很庆幸在911星球遇见一群很美好的女孩子，能和大家相识，我很开心，愿屏幕前的每一个你，万事顺心。", id: "朕乃一果汁君" },
+                        { name: "山东", image: "images/xiaoyugan.jpg", text: "少叹气多笑笑，人生很长不要害怕犯错，生命是一颗长满可能的树。", id: "干炸小鱼干" },
+                        { name: "日照", image: "images/juhao.jpg", text: "好开心自己也是911星球的一员，我们来日方长", id: "。。。。。。。！" },
+                        { name: "山东", image: "images/y.jpg", text: "很开心能和大家在911快乐星球一起生活！天南海北的你们都同样温暖有趣🥳希望在奔赴未来的路上，我们都有着生生不息的热爱，如星璀璨，如风自由！", id: "Y." },
+                        { name: "山东", image: "images/tiancaibeibei.jpg", text: "虚拟的网络，也隔不断心与心之间真挚的情谊。", id: "天才贝贝" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "山东", image: "images/guozhijun.jpg", text: "愿lly身边的家人与挚友岁岁无忧，日日欢喜，平安顺遂。", id: "朕乃一果汁君" },
+                        { name: "山东", image: "images/xiaoyugan.jpg", text: "不常见，但常念。我很开心能认识你们，祝眉目舒展，顺问冬安。", id: "干炸小鱼干" },
+                        { name: "日照", image: "images/juhao.jpg", text: "两个灵魂不会偶然相遇，最好的西西里里大家族，友谊长存，要幸福，要开心", id: "。。。。。。。！" },
+                        { name: "山东", image: "images/y.jpg", text: "家人和朋友，是最大的底气！感谢有你们一直彼此陪伴、相互支持，你们会一起幸福地走过一辈子的山长水远☺愿日子常亮，所求皆如愿，所行化坦途，多喜乐，长安宁！", id: "Y." },
+                        { name: "山东", image: "images/tiancaibeibei.jpg", text: "善良有趣且才华横溢的人们！希望你们一切都好！祝愿你们能常常聚在一起！", id: "天才贝贝" }
+                    ]
+                }]
+            },
+            "湖南省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "常德", image: "images/nuomiji.jpg", text: "风很温柔，花很浪漫，你很特别！春祺夏安，秋绥冬禧。我们会永远在你身后～要开心哦～", id: "糯米叽🍀" },
+                        { name: "岳阳", image: "images/jiaojiaozhe.jpg", text: "NO911是星球的名字，噜噜鱼是住在里面那条吐泡泡的灵魂。谢谢你像礼物一样出现在我的世界，愿这条小鱼岁岁安澜，事事随心，日日有光，夜夜好眠。", id: "嚼嚼者" },
+                        { name: "湖南", image: "images/yu.jpg", text: "帅气迷人搞笑的188.27的lly要天天开心，自由，幸福🥰哦～不要因外界过度被过度束缚，我们都会一直陪着你的！很开心能在茫茫人海中遇见你，发现你的帖子，感谢你带来的快乐！", id: "yu." }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "常德", image: "images/nuomiji.jpg", text: "跨越人海，恰好与你们相逢，山南海北。有幸同频", id: "糯米叽🍀" },
+                        { name: "岳阳", image: "images/jiaojiaozhe.jpg", text: "天南地北，因同一寸柔软而栖，隔着山海，仍能接住彼此掷来的光。谢谢你们，让每一次降落都有回声，能认识大家真的好幸运好幸福！", id: "嚼嚼者" },
+                        { name: "湖南", image: "images/yu.jpg", text: "相逢即是缘，能和大家聚在一起很开心。每个人都是开心😊果来的呀，大家也要幸福快乐呀！", id: "yu." }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "常德", image: "images/nuomiji.jpg", text: "所爱皆平安，所念皆温柔。祝莉莉娅有趣的家人朋友遂己愿，常喜乐～", id: "糯米叽🍀" },
+                        { name: "岳阳", image: "images/jiaojiaozhe.jpg", text: "你们好特别，你们特别好！当你们幸福的时候，我好像也真切地感受到了幸福。所以请一直幸福下去吧！", id: "嚼嚼者" },
+                        { name: "湖南", image: "images/yu.jpg", text: "顺遂无虞，皆得所愿。祝你们开开心心快快乐乐过每天哦～大家都是顶顶好的人！", id: "yu." }
+                    ]
+                }]
+            },
+            "广东省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "广州市", image: "images/xueli.jpg", text: "万事顺遂，小人退散，天天开心！吃嘛嘛香，永不失眠！你超级超级厉害！！！娅粉会一直一直陪着你的", id: "冰糖雪梨" },
+                        { name: "广东", image: "images/iikrj.jpg", text: "最好最帅的小鹿，遇见你是一件很幸福的事。愿你做自由快乐的lly。", id: "iikrj." },
+                        { name: "广州", image: "images/momo.jpg", text: "lly，很幸运也很高兴能在网上认识你！祝lly天天开心心想事成万事顺遂！", id: "momo" },
+                        { name: "广东", image: "images/liulianpaofu.jpg", text: "非常开心可以认识你，希望你身体健康，万事顺意！你是一个很好很好的人！", id: "就爱吃榴莲泡芙" },
+                        { name: "广州市", image: "images/shuishui.jpg", text: "如果一直喜欢你支持你就是我在的话，我会一直陪在你身边！", id: "水水" },
+                        { name: "广东", image: "images/daidaidaimilu.jpg", text: "帅气贴心有才华的LLY，记得要天天开心，按时吃饭～记住，只要你需要，我们会一直在的！一直！", id: "呆呆呆迷鹿羊" },
+                        { name: "广东", image: "images/wayalie.jpg", text: "你就像一颗星星，不用刻意发光，只要站在那儿就已经照亮很多人了。愿百忧全消，好梦好眠～！", id: "哇吖叻" },
+                        { name: "广东", image: "images/xiaojuzi.jpg", text: "谢谢你一直的坚持让我们相遇在911星球～你是自由的，不管想做什么都大胆去做吧，我们一直都在。", id: "小橘子啊🍊" },
+                        { name: "东莞", image: "images/xiaomianhua.jpg", text: "你本就足够耀眼出众，旁人非议不过是见不得光芒，你的优秀从来无需旁人认可。", id: "小棉花" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "广州市", image: "images/xueli.jpg", text: "祝娅粉事业学业都顺利！万事顺遂，天天开心！暴富暴美！", id: "冰糖雪梨" },
+                        { name: "广东", image: "images/iikrj.jpg", text: "好幸运能和大家挤在同一个星球上发光，往后的日子我们继续互相照亮呀。", id: "iikrj." },
+                        { name: "广州", image: "images/momo.jpg", text: "很喜欢娅粉们在评论区中分享的各种事，祝大家每天烦恼少一点，快乐多一点，天天开心！", id: "momo" },
+                        { name: "广东", image: "images/liulianpaofu.jpg", text: "非常开心能遇到大家，和大家一起交流让我很开心，希望大家都能拥有更美好的未来", id: "就爱吃榴莲泡芙" },
+                        { name: "广州市", image: "images/shuishui.jpg", text: "相识一场祝大家永远光明灿烂，做自己人生的主角", id: "水水" },
+                        { name: "广东", image: "images/daidaidaimilu.jpg", text: "优秀的人总会吸引更多优秀的人相聚一堂，感谢才华横溢的你们让我见识到来自五湖四海精彩的人文风景。", id: "呆呆呆迷鹿羊" },
+                        { name: "广东", image: "images/wayalie.jpg", text: "你们每个人都有闪光点，聚在一起就成了一片温柔的星海。能成为其中一员，是我的幸运！", id: "哇吖叻" },
+                        { name: "广东", image: "images/xiaojuzi.jpg", text: "大家都是星星在自己的领域闪闪发光，希望你们每天開心永远幸福 ˗ˋˏᰔᩚˎˊ˗ ", id: "小橘子啊🍊" },
+                        { name: "东莞", image: "images/xiaomianhua.jpg", text: "特别幸运的能在911星球认识那么多娅粉，大家都特别热情温暖，祝大家天天开心！", id: "小棉花" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "广州市", image: "images/xueli.jpg", text: "希望lly的家人朋友们身体健康，万事如意，学业事业都顺顺利利！", id: "冰糖雪梨" },
+                        { name: "广东", image: "images/iikrj.jpg", text: "哈喽，很高兴认识你们呀，谢谢你们给我们带来的光亮。祝大家平安喜乐，生活顺利。", id: "iikrj." },
+                        { name: "广州", image: "images/momo.jpg", text: "谢谢LLY的家人朋友带来的作品，祝大家万事如意心想事成！", id: "momo" },
+                        { name: "广东", image: "images/liulianpaofu.jpg", text: "希望你们都能开开心心，身体健康！", id: "就爱吃榴莲泡芙" },
+                        { name: "广州市", image: "images/shuishui.jpg", text: "很高兴在lly笔下认识你们，祝你们天天开心，健康平安", id: "水水" },
+                        { name: "广东", image: "images/daidaidaimilu.jpg", text: "知己难寻，挚友难遇，祝莉莉娅有趣的家人朋友们天天开心，快乐、幸福的过每一天，有空来找我们玩～", id: "呆呆呆迷鹿羊" },
+                        { name: "广东", image: "images/wayalie.jpg", text: "谢谢你们在他身边种满了爱，才能让我们遇见现在这个温暖又闪亮的他。祝平安喜乐、顺遂无忧！", id: "哇吖叻" },
+                        { name: "广东", image: "images/xiaojuzi.jpg", text: "每次看到在小鹿笔下的大家，都能感觉到你們独特的魅力，祝你們情谊长存、平安顺遂、永远幸福～", id: "小橘子啊🍊" },
+                        { name: "东莞", image: "images/xiaomianhua.jpg", text: "愿你们万事顺意，日子红火，相聚常有欢喜相伴。啊啊啊表白小酒窝，你怎么这么可爱！", id: "小棉花" }
+                    ]
+                }]
+            },
+            "马来西亚": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "马来西亚", image: "images/sling12.jpg", text: "谢谢你一直在！但是想休息了随时都可以最重要是你的开心幸福❤️也把我的好睡眠分你！", id: "s.ling12" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "马来西亚", image: "images/sling12.jpg", text: "通过小鹿有机会和大家一起开心聊天分享玩闹是特别的缘份让来自不同地方的我们相遇❤️", id: "s.ling12" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "马来西亚", image: "images/sling12.jpg", text: "谢谢你们包括小鹿分享生活趣事 回评聊天唱歌给我们听！真的很喜欢，珍惜也很幸福❤️", id: "s.ling12" }]
+                }]
+            },
+            "河南省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "郑州", image: "images/star.jpg", text: "老大你是最厉害的，请保持自信，愿你一切尽意，百事从欢，你是自由的", id: "star_" },
+                        { name: "信阳", image: "images/xiaosurou.jpg", text: "莉莉娅，永远开心，希望你永远为自己考虑，多多照顾自己的情绪", id: "小酥肉大冒险" },
+                        { name: "信阳", image: "images/pianrenchiyexiao.jpg", text: "谢谢莉莉娅创造了热闹温暖的911星球！承蒙陪伴，祝你平安喜乐，随心自由！小跟班会一直在！", id: "骗人请吃夜宵" },
+                        { name: "新乡", image: "images/zhiyu.jpg", text: "很感谢lly为我们带来快乐，希望lly不再失眠，以后都能做一个美梦，还希望你能一直开心，与自己爱的人永远相伴，感受生活中的幸福与美好", id: "执与" },
+                        { name: "洛阳", image: "images/annan.jpg", text: "静待否极泰来，愿你夜夜好眠", id: "安楠有点圆" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "郑州", image: "images/star.jpg", text: "很高兴认识你们呀，祝大家天天开心，万事顺意", id: "star_" },
+                        { name: "信阳", image: "images/xiaosurou.jpg", text: "911星球永不散场，我们要在一起玩一辈子", id: "小酥肉大冒险" },
+                        { name: "信阳", image: "images/pianrenchiyexiao.jpg", text: "同担握手づ♡ど！特别开心能和这样善良可爱的米分们相遇！大家一定会心想事成，全部暴富！", id: "骗人请吃夜宵" },
+                        { name: "新乡", image: "images/zhiyu.jpg", text: "非常幸运能在911星球中遇见你们，认识你们，大家互相陪伴很久，希望大家在以后的日子里都能被幸福包围，都能暴富发大财", id: "执与" },
+                        { name: "洛阳", image: "images/annan.jpg", text: "很高兴认识你，欢迎入住911星球", id: "安楠有点圆" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "郑州", image: "images/star.jpg", text: "很高心通过lly认识你们，祝你们今天愉快，你们明天的愉快我留着明天再祝，下次也会跟你们说，多来找我们玩呀！", id: "star_" },
+                        { name: "信阳", image: "images/xiaosurou.jpg", text: "很高兴通过lly认识你们，祝你们身体健康一切顺利", id: "小酥肉大冒险" },
+                        { name: "信阳", image: "images/pianrenchiyexiao.jpg", text: "果然温柔的人身边也簇拥着同样美好的人，很高兴透过莉莉娅的文字认识大家！感谢陪伴，祝大家每一天都开心快乐，万事皆顺！", id: "骗人请吃夜宵" },
+                        { name: "新乡", image: "images/zhiyu.jpg", text: "很高兴通过lly认识你们，在偌大的世界里，彼此相遇实属不易，希望你们在以后的日子里能永远开心，永远幸福", id: "执与" },
+                        { name: "洛阳", image: "images/annan.jpg", text: "很庆幸隔着屏幕认识了你们。愿你们的群像故事一直连载，而我永远做那个为美好鼓掌的读者", id: "安楠有点圆" }
+                    ]
+                }]
+            },
+            "江西省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "上饶", image: "images/zzzzzzz.jpg", text: "很高兴认识你呀谢谢你带来了欢乐和力量，祝你拥有一个好的睡眠少些内耗和烦恼", id: "Zzzzzzz." },
+                        { name: "江西", image: "images/yuezimo.jpg", text: "记得做一个快乐的大人，不要内耗。很开心认识你，谢谢你让我认识这么多的娅粉宝宝，看你的帖子和娅粉宝宝互动已经成为我的日常了。", id: "玥子墨" },
+                        { name: "南昌市", image: "images/daixiaoya.jpg", text: "遇见你是一件非常非常幸运的事情，所幸我运气好，在一个还不错的时间遇上了你。愿你永远做自己，我们一直都在！！", id: "呆小鸦" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "上饶", image: "images/zzzzzzz.jpg", text: "有幸加入911星球遇见你们每个人都很美好顶顶好祝你们得偿所愿，幸福顺遂", id: "Zzzzzzz." },
+                        { name: "江西", image: "images/yuezimo.jpg", text: "感谢相遇，互联网认识大家很开心，祝大家所愿皆所得。", id: "玥子墨" },
+                        { name: "南昌市", image: "images/daixiaoya.jpg", text: "很高兴可以和大家一起成为911星球的居民们，是你们让我成为更好的自己，希望我们一直都幸福快乐下去！", id: "呆小鸦" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "上饶", image: "images/zzzzzzz.jpg", text: "每个人都要健康快乐平安如意 生活工作顺利好运常在，幸福如呼吸般简单", id: "Zzzzzzz." },
+                        { name: "江西", image: "images/yuezimo.jpg", text: "工作顺利，身体健康，诸事皆宜，好运常伴。", id: "玥子墨" },
+                        { name: "南昌市", image: "images/daixiaoya.jpg", text: "通过lly认识你们是一件很神奇的事情，你们都是很好很好的人呀！祝你们天天开心，平安顺遂，都能得偿所愿", id: "呆小鸦" }
+                    ]
+                }]
+            },
+            "黑龙江省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "黑龙江", image: "images/cheng.jpg", text: "你像从天而降的礼物 给我带来数不尽的快乐和幸福 愿你每天开心快乐永远热烈且自由", id: "丞" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "黑龙江", image: "images/cheng.jpg", text: "与你们相识何其有幸 缘分注定让我们相聚 愿我们大家友谊长存在幸福的每一刻", id: "丞" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "黑龙江", image: "images/cheng.jpg", text: "平安健康 事事顺意 因为lly认识大家是一件特别幸运的事情愿你们永远幸福常伴", id: "丞" }]
+                }]
+            },
+            "上海市": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "上海", image: "images/fengkaobiguo.jpg", text: "祝大帅新的一岁有爱有梦，有忙有闲，好好睡觉，天天开心", id: "逢考必过" },
+                        { name: "上海", image: "images/zhengqianmai.jpg", text: "多多吃饭，安心睡觉，一起住在童话里", id: "挣钱买烤鸭" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "上海", image: "images/fengkaobiguo.jpg", text: "幸得相逢，日日皆暖", id: "逢考必过" },
+                        { name: "上海", image: "images/zhengqianmai.jpg", text: "好好生活，慢慢相遇，一起住在童话里", id: "挣钱买烤鸭" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "上海", image: "images/fengkaobiguo.jpg", text: "在千里之外的你们，愿你我皆安暖", id: "逢考必过" },
+                        { name: "上海", image: "images/zhengqianmai.jpg", text: "事事顺遂，平安健康，你们也在童话里", id: "挣钱买烤鸭" }
+                    ]
+                }]
+            },
+            "江苏省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "苏州市", image: "images/luqiqi.jpg", text: "愿LLY一切尽意，百事从欢，天天开心，夜夜好眠，径行直遂，青云万里。", id: "麓七七" },
+                        { name: "泰州", image: "images/yerongleo.jpg", text: "世界很大，我们很小。别让他人的目光修剪你的枝丫，相信自己。所以，别怕，亲爱的哥哥，有我呢(◍•ᴗ•◍)", id: "椰蓉Leo" },
+                        { name: "南京市", image: "images/shanyingdu.jpg", text: "愿你永远有坚持热爱的勇气，如星璀璨，如风自由，幸福快乐，我们一直在。", id: "杉影渡" },
+                        { name: "江苏", image: "images/jingchangbanye.jpg", text: "愿你登高台，愿你摘清月，愿你抖落一身灰暗与嘈杂的流言！我希望你一切都好，希望所有俗套的祝福语都在你身上灵验，始终幸福！", id: "经常半夜饿醒" },
+                        { name: "江苏", image: "images/wohencongmingde.jpg", text: "文字是作者灵魂的缩影，于是我洞见你的一角。陆礼遇，你是锦鲤，也是幸运遇见的礼物。", id: "我很聪明的！" },
+                        { name: "南京", image: "images/xxx999.jpg", text: "现在还是将来，都希望你能做一个幸福快乐、勇敢接受爱和表达爱的朋友！谢谢你一直以来带给我们的快乐！！辛苦了！", id: "xxx.999" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "苏州市", image: "images/luqiqi.jpg", text: "在数据洪流里相遇，是赛博世界里最浪漫的意外，愿911星球居民平安喜乐，万事顺意。", id: "麓七七" },
+                        { name: "泰州", image: "images/yerongleo.jpg", text: "春祺夏安，秋妥冬禧。风华正茂的年纪， 在911星球上遇见你们是我的幸运，枯木会逢春，我们要走的路也会繁花似锦！", id: "椰蓉Leo" },
+                        { name: "南京市", image: "images/shanyingdu.jpg", text: "我们有幸因同一份热爱相逢，愿大家都在自己的小宇宙里发光，只做自己，长乐未央。", id: "杉影渡" },
+                        { name: "江苏", image: "images/jingchangbanye.jpg", text: "生而自由，爱而无畏，我们各自忙碌，却互相牵挂，愿眼有星河，心有丘壑，各自璀璨！", id: "经常半夜饿醒" },
+                        { name: "江苏", image: "images/wohencongmingde.jpg", text: "当有人步履坚定地走近，我会拿出全部真诚与勇气，用完整的灵魂与她/他正面相遇。", id: "我很聪明的！" },
+                        { name: "南京", image: "images/xxx999.jpg", text: "这世界每一份相遇都很奇妙，每个人，每件事。", id: "xxx.999" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "苏州市", image: "images/luqiqi.jpg", text: "祝有趣又有才的LLY家人朋友，聚时如火，散时如星，春祺夏安，秋绥冬禧。", id: "麓七七" },
+                        { name: "泰州", image: "images/yerongleo.jpg", text: "椿萱并茂，棠棣同馨。谢谢你们给予陆鲤鱼的爱，才让我遇见了一个这么好的他，请放心，我也会继续支持他的。愿你们岁岁常欢愉事事皆胜意！", id: "椰蓉Leo" },
+                        { name: "南京市", image: "images/shanyingdu.jpg", text: "祝愿你们永远随心而行，一生被温柔包裹，自在尽兴，顺遂无忧。", id: "杉影渡" },
+                        { name: "江苏", image: "images/jingchangbanye.jpg", text: "感谢相遇，愿你们所求皆如愿，所行化坦途，多喜乐，长安宁！一切都好，越来越好！", id: "经常半夜饿醒" },
+                        { name: "江苏", image: "images/wohencongmingde.jpg", text: "挚友是疲惫生活里的良药，家是心底最柔软想守护的地方，祝一切都好，常聚常挂念。", id: "我很聪明的！" },
+                        { name: "南京", image: "images/xxx999.jpg", text: "越来越好 天天开心 好好吃饭 按时休息 保持健康 好好爱自己好好生活！！！", id: "xxx.999" }
+                    ]
+                }]
+            },
+            "浙江省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "宁波", image: "images/huanxiangyu.jpg", text: "莉莉娅你的好我已无法用言语形容，感谢缘分让我们相识！愿你日日好梦，天天开心～", id: "幻想屿" },
+                        { name: "浙江", image: "images/shayu.jpg", text: "哈喽，你好呀，188.27克拉大钻石，你的每个切面都被精雕细琢得闪烁着火彩，谁能不稀罕呢，盼你一直发光发亮，肆意快乐，尽情张扬。", id: "摸鲨鱼的角" },
+                        { name: "杭州市", image: "images/chenguangweixi.jpg", text: "超级幸运认识你这个帅哥朋友！老大你得到我们的喜欢是因为你值得，愿老大顺顺利利，所愿皆所得！🍀", id: "辰光微溪." },
+                        { name: "浙江", image: "images/naiyouzhishi.jpg", text: "希望你永远自由，永远做自己，小跟班们会一直支持你，只要你回头，我们都在，一直在！911的住户们玩的都很开心，希望我们的宝贝朋友lly和我们一样，永远快乐，天天开心！", id: "奶油芝士xuan" },
+                        { name: "杭州", image: "images/nuomidamangguo.jpg", text: "希望lly夜夜沾枕头就昏睡，好梦连绵不失眠！超级感谢你打造温暖治愈的911星球！！", id: "糯米大芒果" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "宁波", image: "images/huanxiangyu.jpg", text: "遇到你们超级幸运！希望大家永远被爱包围，没有烦恼～", id: "幻想屿" },
+                        { name: "浙江", image: "images/shayu.jpg", text: "吸引力法则，人人和而不同，真诚，友善，热烈，很久没有感受到被小小的善意包裹住，来到这里的我也变得活跃起来，那是生命力的感觉吧，911星球的生命力离不开每一个人。", id: "摸鲨鱼的角" },
+                        { name: "杭州市", image: "images/chenguangweixi.jpg", text: "大家好呀，很开心入住911星球！这个星球特别温暖，是一群美好的人一起散发光芒，我要在这里永久居住！", id: "辰光微溪." },
+                        { name: "浙江", image: "images/naiyouzhishi.jpg", text: "911星球因为大家的存在而变得更加美好，很幸运可以在这里和大家相遇，我们永不散场！", id: "奶油芝士xuan" },
+                        { name: "杭州", image: "images/nuomidamangguo.jpg", text: "能在911星球遇见这么多温柔的大家真的好幸运，希望我们每个人都能一直被细碎的美好包围，每天都有值得开心的小事🧡", id: "糯米大芒果" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "宁波", image: "images/huanxiangyu.jpg", text: "莉莉娅的家人朋友们，愿你们天天开心，平安顺遂，所愿皆成真！", id: "幻想屿" },
+                        { name: "浙江", image: "images/shayu.jpg", text: "lly大钻石的亲友必须是奇珍异宝啊，感受到了每个人身上独特的魅力，祝你们一切都好，身体好，心情好，生活越来越好～", id: "摸鲨鱼的角" },
+                        { name: "杭州市", image: "images/chenguangweixi.jpg", text: "通过lly认识你们是一件很神奇更是幸运的事情，你们如lly笔下的文字一样闪闪发光，希望你们平安顺遂，多来玩呀！", id: "辰光微溪." },
+                        { name: "浙江", image: "images/naiyouzhishi.jpg", text: "很高兴通过lly认识了你们，你们也是我素未谋面的朋友，愿你们平安健康，万事顺遂！", id: "奶油芝士xuan" },
+                        { name: "杭州", image: "images/nuomidamangguo.jpg", text: "很庆幸能通过lly了解到大家，从lly的分享里看到你们热闹温暖的日常，很羡慕你们彼此陪伴的美好，祝大家生活顺遂，永远拥有轻松惬意的相处时光。", id: "糯米大芒果" }
+                    ]
+                }]
+            },
+            "福建省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [
+                        { name: "厦门", image: "images/tangzixinglu.jpg", text: "希望你可以越来好越好，好好吃饭，按时休息，保持健康，内心和平冷静，坦然拒绝不内疚。我们一直都在呀，不管开心还是难过我们都很乐意做你的听众呀！", id: "糖渍星鹿" },
+                        { name: "福建", image: "images/shilalala.jpg", text: "哈喽哈喽，超级无敌霹雳帅的lly，很幸运能够认识你，谢谢你给我带来这么多快乐，你也要天天开心，好好睡觉好好吃饭。", id: "是啦啦啦🎐（乖宝宝版）" },
+                        { name: "泉州", image: "images/Luv.jpg", text: "lly你真的就像一束光救赎我，照进了我的世界，希望你每天开开心心～不开心的话可以跟我们分享，我们永远在你身后！", id: "Lu_v(粉lly一辈子)" }
+                    ]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [
+                        { name: "厦门", image: "images/tangzixinglu.jpg", text: "生命中有的人像礼物一般的存在，是一想到就觉得，心底忽而亮堂，是觉得对方的身体里，有蓬勃的惊喜充盈，亲爱的娅粉们，而你们于我而言，便是这样的存在。", id: "糖渍星鹿" },
+                        { name: "福建", image: "images/shilalala.jpg", text: "感谢lly让我遇见可爱的你们，在这里永远有人接住我，谢谢你们，俺要祝大家男更帅，女更美，数钱数到手抽筋。", id: "是啦啦啦🎐（乖宝宝版）" },
+                        { name: "泉州", image: "images/Luv.jpg", text: "很高兴也很幸运能够遇见大家，有时候不开心了或者是有问题问大家，大家都超级热心～相遇即是缘分，祝大家暴富暴美心想事成！", id: "Lu_v(粉lly一辈子)" }
+                    ]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [
+                        { name: "厦门", image: "images/tangzixinglu.jpg", text: "祝LLY的家人朋友们所求皆如愿，所行化坦途，多喜乐，长安宁。", id: "糖渍星鹿" },
+                        { name: "福建", image: "images/shilalala.jpg", text: "很高兴通过lly认识了大家，谢谢你们带来的歌声，愿你们烟火日常，一切安好。", id: "是啦啦啦🎐（乖宝宝版）" },
+                        { name: "泉州", image: "images/Luv.jpg", text: "lly的家人朋友你们好呀～祝你们万事顺意，开心幸福，好运爆棚，平安健康，所愿皆如愿！", id: "Lu_v(粉lly一辈子)" }
+                    ]
+                }]
+            },
+            "四川省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "四川", image: "images/juanjuanai.jpg", text: "昭昭如愿 岁岁安澜。祝lly天天开心，百福具臻，睡眠质量up！！", id: "卷卷爱吃面" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "四川", image: "images/juanjuanai.jpg", text: "最好的关系，有幸遇见，恰好合拍，祝大家生活愉快", id: "卷卷爱吃面" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "四川", image: "images/juanjuanai.jpg", text: "平安喜乐，吃好喝好，每天都睡个好觉。纵使远隔千里，在看不到的时光里也能幸福美满。", id: "卷卷爱吃面" }]
+                }]
+            },
+            "河北省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "河北", image: "images/shuibubao.jpg", text: "天天开心 自由自在 睡个好觉", id: "睡不饱抱帅哥" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "河北", image: "images/shuibubao.jpg", text: "生活顺利 天天开心 很幸运认识了你们 ", id: "睡不饱抱帅哥" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "河北", image: "images/shuibubao.jpg", text: "平安顺遂 万事如意 永远幸福 ", id: "睡不饱抱帅哥" }]
+                }]
+            },
+            "陕西省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "西安市", image: "images/taoliyanhuo.jpg", text: "谢谢你的存在！谢谢你的坚持！谢谢你的出现！你真的宇宙超级无敌非常特别好！！！", id: "逃离烟火" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "西安市", image: "images/taoliyanhuo.jpg", text: "希望大家不忘初心～感谢相遇！一起在911星球开心幸福地走下去吧！", id: "逃离烟火" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "西安市", image: "images/taoliyanhuo.jpg", text: "大家都要健康平安～天天开心！陪这个超好的lly岁岁年年～碎碎念念！", id: "逃离烟火" }]
+                }]
+            },
+            "甘肃省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "甘肃", image: "images/bianchengjiangshi.jpg", text: "莉莉娅，何其有幸能够遇见你，祝你，永远热烈，永远尽兴！！！", id: "变成僵尸蹦着追西西里里" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "甘肃", image: "images/bianchengjiangshi.jpg", text: "很高兴在五月加入911星球，认识大家的每一天，我都很开心，希望我们就这样长长久久的走下去吧！", id: "变成僵尸蹦着追西西里里" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "甘肃", image: "images/bianchengjiangshi.jpg", text: "愿你们亲情温暖，友情长存，爱意年年，一生皆圆满。", id: "变成僵尸蹦着追西西里里" }]
+                }]
+            },
+            "辽宁省": {
+                icon: "⭐",
+                groups: [{
+                    name: "对LLY",
+                    icon: "🧡",
+                    cities: [{ name: "辽宁", image: "images/angel.jpg", text: "感谢相遇 我会一直在 开开心做你自己就好了小鹿🖤。", id: "Angel" }]
+                }, {
+                    name: "对娅粉",
+                    icon: "💜",
+                    cities: [{ name: "辽宁", image: "images/angel.jpg", text: "愿大家万事顺遂 健康无忧 感谢遇见🤍", id: "Angel" }]
+                }, {
+                    name: "对LLY的家人朋友",
+                    icon: "💛",
+                    cities: [{ name: "辽宁", image: "images/angel.jpg", text: "健康 平安 无忧 一直幸福下去吧🩶", id: "Angel" }]
+                }]
+            }
+        };
+
+        // ================================================================
+        //  已读状态管理
+        // ================================================================
+
+        const STORAGE_KEY = 'read_cards_v4';
+        const GALLERY_STORAGE_KEY = 'read_gallery_v1';
+        const LLY_STORAGE_KEY = 'read_cards_v3';
+
+        function getReadKeys(storageKey) {
+            try {
+                const data = localStorage.getItem(storageKey);
+                return data ? JSON.parse(data) : [];
+            } catch { return []; }
+        }
+
+        function saveReadKeys(storageKey, keys) {
+            localStorage.setItem(storageKey, JSON.stringify(keys));
+        }
+
+        function markAsRead(storageKey, key) {
+            const keys = getReadKeys(storageKey);
+            if (!keys.includes(key)) {
+                keys.push(key);
+                saveReadKeys(storageKey, keys);
+            }
+        }
+
+        function isRead(storageKey, key) {
+            return getReadKeys(storageKey).includes(key);
+        }
+
+        function getCityKey(province, group, cityIndex) {
+            return `${province}||${group}||${cityIndex}`;
+        }
+
+        function getLLYKey(index) {
+            return `lly||${index}`;
+        }
+
+        function getGalleryKey(index) {
+            return `gallery||${index}`;
+        }
+
+        // ================================================================
+        //  应用逻辑
+        // ================================================================
+
+        const viewProvince = document.getElementById('viewProvince');
+        const viewGroup = document.getElementById('viewGroup');
+        const viewCity = document.getElementById('viewCity');
+        const viewDetail = document.getElementById('viewDetail');
+        const viewGallery = document.getElementById('viewGallery');
+        const provinceList = document.getElementById('provinceList');
+        const groupGrid = document.getElementById('groupGrid');
+        const cityGrid = document.getElementById('cityGrid');
+        const galleryGrid = document.getElementById('galleryGrid');
+        const groupTitle = document.getElementById('groupTitle');
+        const groupBadge = document.getElementById('groupBadge');
+        const cityTitle = document.getElementById('cityTitle');
+        const cityBadge = document.getElementById('cityBadge');
+        const galleryBadge = document.getElementById('galleryBadge');
+        const backToProvince = document.getElementById('backToProvince');
+        const backToGroup = document.getElementById('backToGroup');
+        const backToCity = document.getElementById('backToCity');
+        const backToProvinceFromGallery = document.getElementById('backToProvinceFromGallery');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailIdBadge = document.getElementById('detailIdBadge');
+        const detailImg = document.getElementById('detailImg');
+        const detailPlaceholder = document.getElementById('detailPlaceholder');
+        const detailQuote = document.getElementById('detailQuote');
+        const detailLabel = document.getElementById('detailLabel');
+        const detailIdDisplay = document.getElementById('detailIdDisplay');
+        const toastContainer = document.getElementById('toastContainer');
+
+        const filterBtns = document.querySelectorAll('#filterBar .filter-btn');
+        const filterCount = document.getElementById('filterCount');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        let currentFilter = 'all';
+
+        const galleryFilterBtns = document.querySelectorAll('#galleryFilterBar .filter-btn');
+        const galleryFilterCount = document.getElementById('galleryFilterCount');
+        let currentGalleryFilter = 'all';
+
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalClose = document.getElementById('modalClose');
+
+        const music = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        const musicStatus = document.getElementById('musicStatus');
+        let isPlaying = false;
+
+        musicBtn.addEventListener('click', function() {
+            if (isPlaying) {
+                music.pause();
+                musicBtn.textContent = '🔇';
+                musicStatus.textContent = '已暂停';
+                isPlaying = false;
+            } else {
+                music.play().then(() => {
+                    musicBtn.textContent = '🔊';
+                    musicStatus.textContent = '播放中';
+                    isPlaying = true;
+                }).catch(() => {
+                    musicStatus.textContent = '点击播放';
+                    alert('请先点击页面任意位置，再点击播放按钮');
+                });
+            }
+        });
+
+        document.addEventListener('click', function() {
+            if (!isPlaying && music.paused) {
+                music.play().then(() => {
+                    musicBtn.textContent = '🔊';
+                    musicStatus.textContent = '播放中';
+                    isPlaying = true;
+                }).catch(() => {});
+            }
+        }, { once: true });
+
+        let currentProvince = '';
+        let currentGroupName = '';
+        let currentGroupCities = [];
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            toastContainer.appendChild(t);
+            setTimeout(() => t.remove(), 2800);
+        }
+
+        // ===== 渲染省份列表（一些评论 > LLY > 普通省份） =====
+        function renderProvinces() {
+            let html = '';
+
+            // 1. 一些评论
+            html += `
+                <div class="province-item" data-type="gallery">
+                    <span class="province-emoji">📕</span>
+                    <span class="province-name">一些评论</span>
+                    <span class="province-count">${GALLERY_IMAGES.length} 张图片</span>
+                    <span class="province-arrow">›</span>
+                </div>
+            `;
+
+            // 2. LLY
+            html += `
+                <div class="province-item" data-type="lly">
+                    <span class="province-emoji">🌙</span>
+                    <span class="province-name">LLY</span>
+                    <span class="province-count">${LLY_DATA.length} 个投稿</span>
+                    <span class="province-arrow">›</span>
+                </div>
+            `;
+
+            // 3. 普通省份
+            const provinceNames = Object.keys(PROVINCE_DATA);
+            provinceNames.forEach(name => {
+                const groups = PROVINCE_DATA[name].groups || [];
+                const icon = PROVINCE_DATA[name].icon || '📍';
+                let totalCities = 0;
+                groups.forEach(g => { totalCities += g.cities.length; });
+                html += `
+                    <div class="province-item" data-type="province" data-province="${name}">
+                        <span class="province-emoji">${icon}</span>
+                        <span class="province-name">${name}</span>
+                        <span class="province-count">${totalCities} 个投稿</span>
+                        <span class="province-arrow">›</span>
+                    </div>
+                `;
+            });
+
+            provinceList.innerHTML = html;
+
+            document.querySelectorAll('.province-item').forEach(el => {
+                el.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    if (type === 'gallery') {
+                        openGalleryView();
+                    } else if (type === 'lly') {
+                        openLLYView();
+                    } else if (type === 'province') {
+                        const name = this.dataset.province;
+                        if (PROVINCE_DATA[name]) openGroupView(name);
+                        else showToast('该省份暂无数据');
+                    }
+                });
+            });
+        }
+
+        // ===== LLY视图 =====
+        function openLLYView() {
+            cityTitle.innerHTML = `<span>⭐</span> LLY`;
+            cityBadge.textContent = `${LLY_DATA.length} 个投稿`;
+            currentFilter = 'all';
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('#filterBar .filter-btn[data-filter="all"]').classList.add('active');
+            searchInput.value = '';
+            clearSearch.classList.remove('visible');
+            renderLLYGrid();
+            switchView('viewCity');
+        }
+
+        function renderLLYGrid() {
+            const filter = currentFilter;
+            const searchTerm = searchInput.value.trim().toLowerCase();
+
+            let filtered = LLY_DATA;
+
+            if (filter === 'read') {
+                filtered = filtered.filter((_, idx) => {
+                    const key = getLLYKey(idx);
+                    return isRead(LLY_STORAGE_KEY, key);
+                });
+            } else if (filter === 'unread') {
+                filtered = filtered.filter((_, idx) => {
+                    const key = getLLYKey(idx);
+                    return !isRead(LLY_STORAGE_KEY, key);
+                });
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(item => {
+                    return item.province.includes(searchTerm) ||
+                        item.text.includes(searchTerm) ||
+                        item.flower.includes(searchTerm);
+                });
+            }
+
+            const total = LLY_DATA.length;
+            const shown = filtered.length;
+            filterCount.textContent = `${shown} / ${total}`;
+
+            if (searchTerm) clearSearch.classList.add('visible');
+            else clearSearch.classList.remove('visible');
+
+            if (filtered.length === 0) {
+                cityGrid.innerHTML =
+                    `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:rgba(255,255,255,0.2);font-size:0.9rem;">📭 没有符合条件的投稿</div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((item) => {
+                const originalIndex = LLY_DATA.indexOf(item);
+                const key = getLLYKey(originalIndex);
+                const read = isRead(LLY_STORAGE_KEY, key);
+
+                const imgHtml = item.image ?
+                    `<img src="images/${item.image}" alt="${item.flower}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<span class=\\'preview-emoji\\'>🌸</span>';this.nextElementSibling.style.display='none';" />
+                     <div class="flower-name">${item.flower}：${item.flowerMeaning}</div>` :
+                    `<span class="preview-emoji">🌸</span>`;
+
+                html += `
+                    <div class="city-card ${read ? 'read' : ''}" data-index="${originalIndex}" data-type="lly">
+                        <div class="read-badge">👀 已看</div>
+                        <div class="city-preview">${imgHtml}</div>
+                        <div class="city-info">
+                            <div class="city-name">${item.province}</div>
+                            <div class="city-text">${item.text}</div>
+                            <div class="city-id">ID: NO.911</div>
+                        </div>
+                    </div>
+                `;
+            });
+            cityGrid.innerHTML = html;
+
+            document.querySelectorAll('.city-card').forEach(el => {
+                el.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    openLLYDetailView(idx);
+                });
+            });
+        }
+
+        function openLLYDetailView(index) {
+            const item = LLY_DATA[index];
+            if (!item) return;
+
+            const key = getLLYKey(index);
+            markAsRead(LLY_STORAGE_KEY, key);
+
+            detailTitle.innerHTML = `<span>🏵️</span> ${item.province}`;
+            detailIdBadge.textContent = `ID: NO.911`;
+
+            if (item.image) {
+                detailImg.src = `images/${item.image}`;
+                detailImg.style.display = 'block';
+                detailPlaceholder.style.display = 'none';
+                detailImg.onerror = function() {
+                    this.style.display = 'none';
+                    detailPlaceholder.style.display = 'block';
+                    detailPlaceholder.textContent = '🌸';
+                };
+            } else {
+                detailImg.style.display = 'none';
+                detailPlaceholder.style.display = 'block';
+                detailPlaceholder.textContent = '🌸';
+            }
+
+            detailFlowerName.textContent = `${item.flower}：${item.flowerMeaning}`;
+            detailQuote.textContent = item.text;
+            detailLabel.textContent = `—— LLY · 安徽`;
+            detailIdDisplay.textContent = `ID: NO.911`;
+
+            switchView('viewDetail');
+        }
+
+        // ===== 普通省份视图 =====
+        function openGroupView(provinceName) {
+            const province = PROVINCE_DATA[provinceName];
+            if (!province || !province.groups || !province.groups.length) {
+                showToast('该省份暂无分组');
+                return;
+            }
+            currentProvince = provinceName;
+            groupTitle.innerHTML = `<span>📍</span> ${provinceName}`;
+            groupBadge.textContent = `${province.groups.length} 个分组`;
+
+            let html = '';
+            province.groups.forEach((group, index) => {
+                const count = group.cities ? group.cities.length : 0;
+                html += `
+                    <div class="group-card" data-index="${index}">
+                        <span class="group-icon">${group.icon || '📂'}</span>
+                        <div class="group-name">${group.name}</div>
+                        <div class="group-count">${count} 个投稿</div>
+                    </div>
+                `;
+            });
+            groupGrid.innerHTML = html;
+            document.querySelectorAll('.group-card').forEach(el => {
+                el.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    openCityView(currentProvince, idx);
+                });
+            });
+            switchView('viewGroup');
+        }
+
+        function openCityView(provinceName, groupIndex) {
+            const province = PROVINCE_DATA[provinceName];
+            if (!province || !province.groups || !province.groups[groupIndex]) {
+                showToast('分组数据不存在');
+                return;
+            }
+            const group = province.groups[groupIndex];
+            if (!group.cities || !group.cities.length) {
+                showToast('该分组暂无投稿');
+                return;
+            }
+            currentGroupName = group.name;
+            currentGroupCities = group.cities;
+            cityTitle.innerHTML = `<span>📂</span> ${group.name}`;
+            cityBadge.textContent = `${group.cities.length} 个投稿`;
+
+            currentFilter = 'all';
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('#filterBar .filter-btn[data-filter="all"]').classList.add('active');
+            searchInput.value = '';
+            clearSearch.classList.remove('visible');
+
+            renderCityGrid(provinceName, group);
+            switchView('viewCity');
+        }
+
+        function renderCityGrid(provinceName, group) {
+            const filter = currentFilter;
+            const searchTerm = searchInput.value.trim().toLowerCase();
+
+            let filteredCities = group.cities;
+
+            if (filter === 'read') {
+                filteredCities = filteredCities.filter((city, idx) => {
+                    const key = getCityKey(provinceName, group.name, idx);
+                    return isRead(STORAGE_KEY, key);
+                });
+            } else if (filter === 'unread') {
+                filteredCities = filteredCities.filter((city, idx) => {
+                    const key = getCityKey(provinceName, group.name, idx);
+                    return !isRead(STORAGE_KEY, key);
+                });
+            }
+
+            if (searchTerm) {
+                filteredCities = filteredCities.filter(city => {
+                    const nameMatch = city.name.includes(searchTerm);
+                    const textMatch = city.text && city.text.includes(searchTerm);
+                    const idMatch = city.id && city.id.includes(searchTerm);
+                    return nameMatch || textMatch || idMatch;
+                });
+            }
+
+            const total = group.cities.length;
+            const shown = filteredCities.length;
+            filterCount.textContent = `${shown} / ${total}`;
+
+            if (searchTerm) clearSearch.classList.add('visible');
+            else clearSearch.classList.remove('visible');
+
+            if (filteredCities.length === 0) {
+                cityGrid.innerHTML =
+                    `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:rgba(255,255,255,0.2);font-size:0.9rem;">📭 没有符合条件的投稿</div>`;
+                return;
+            }
+
+            let html = '';
+            filteredCities.forEach((city, idx) => {
+                const originalIndex = group.cities.indexOf(city);
+                const key = getCityKey(provinceName, group.name, originalIndex);
+                const read = isRead(STORAGE_KEY, key);
+
+                const imgHtml = city.image ?
+                    `<img src="${city.image}" alt="${city.name}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<span class=\\'preview-emoji\\'>🏙️</span>';" />` :
+                    `<span class="preview-emoji">🏙️</span>`;
+
+                html += `
+                    <div class="city-card ${read ? 'read' : ''}" data-index="${originalIndex}" data-type="city">
+                        <div class="read-badge">👀 已看</div>
+                        <div class="city-preview">${imgHtml}</div>
+                        <div class="city-info">
+                            <div class="city-name">${city.name}</div>
+                            <div class="city-text">${city.text}</div>
+                            <div class="city-id">ID: ${city.id || '--'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            cityGrid.innerHTML = html;
+
+            document.querySelectorAll('.city-card').forEach(el => {
+                el.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    openDetailView(provinceName, group, idx);
+                });
+            });
+        }
+
+        function openDetailView(provinceName, group, index) {
+            const city = group.cities[index];
+            if (!city) return;
+
+            const key = getCityKey(provinceName, group.name, index);
+            markAsRead(STORAGE_KEY, key);
+
+            detailTitle.innerHTML = `<span>🏙️</span> ${city.name}`;
+            detailIdBadge.textContent = `ID: ${city.id || '--'}`;
+
+            if (city.image) {
+                detailImg.src = city.image;
+                detailImg.style.display = 'block';
+                detailPlaceholder.style.display = 'none';
+                detailImg.onerror = function() {
+                    this.style.display = 'none';
+                    detailPlaceholder.style.display = 'block';
+                    detailPlaceholder.textContent = '🖼️ 加载失败';
+                };
+            } else {
+                detailImg.style.display = 'none';
+                detailPlaceholder.style.display = 'block';
+                detailPlaceholder.textContent = '🏙️ 暂无图片';
+            }
+
+            detailQuote.textContent = city.text || '这个城市还没有留下描述...';
+            detailLabel.textContent = `—— 来自 911星球 · ${provinceName}`;
+            detailIdDisplay.textContent = `ID: ${city.id || '--'}`;
+
+            switchView('viewDetail');
+        }
+
+        // ===== 画廊视图 =====
+        function openGalleryView() {
+            galleryBadge.textContent = `${GALLERY_IMAGES.length} 张图片`;
+            currentGalleryFilter = 'all';
+            galleryFilterBtns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('#galleryFilterBar .filter-btn[data-filter="all"]').classList.add('active');
+            renderGalleryGrid();
+            switchView('viewGallery');
+        }
+
+        function renderGalleryGrid() {
+            const filter = currentGalleryFilter;
+
+            let filtered = GALLERY_IMAGES.map((item, idx) => ({ ...item, index: idx }));
+
+            if (filter === 'read') {
+                filtered = filtered.filter(item => {
+                    const key = getGalleryKey(item.index);
+                    return isRead(GALLERY_STORAGE_KEY, key);
+                });
+            } else if (filter === 'unread') {
+                filtered = filtered.filter(item => {
+                    const key = getGalleryKey(item.index);
+                    return !isRead(GALLERY_STORAGE_KEY, key);
+                });
+            }
+
+            const total = GALLERY_IMAGES.length;
+            const shown = filtered.length;
+            galleryFilterCount.textContent = `${shown} / ${total}`;
+
+            if (filtered.length === 0) {
+                galleryGrid.innerHTML =
+                    `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:rgba(255,255,255,0.2);font-size:0.9rem;">📭 没有符合条件的图片</div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((item) => {
+                const idx = item.index;
+                const key = getGalleryKey(idx);
+                const read = isRead(GALLERY_STORAGE_KEY, key);
+
+                const imgHtml = item.image ?
+                    `<img src="${item.image}" alt="评论图片 ${idx+1}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'placeholder\\'>🖼️</div>';" />` :
+                    `<div class="placeholder">🖼️</div>`;
+
+                html += `
+                    <div class="gallery-item ${read ? 'read' : ''}" data-index="${idx}">
+                        <div class="read-badge">👀 已看</div>
+                        ${imgHtml}
+                    </div>
+                `;
+            });
+            galleryGrid.innerHTML = html;
+
+            document.querySelectorAll('.gallery-item').forEach(el => {
+                el.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    const item = GALLERY_IMAGES[idx];
+                    if (item && item.image) {
+                        const key = getGalleryKey(idx);
+                        markAsRead(GALLERY_STORAGE_KEY, key);
+                        openImageModal(item.image);
+                        renderGalleryGrid();
+                    } else {
+                        showToast('图片不存在');
+                    }
+                });
+            });
+        }
+
+        function openImageModal(imageSrc) {
+            modalImage.src = imageSrc;
+            modalImage.onerror = function() {
+                this.src = '';
+                this.alt = '图片加载失败';
+            };
+            imageModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            imageModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        modalClose.addEventListener('click', closeImageModal);
+        imageModal.addEventListener('click', function(e) {
+            if (e.target === this) closeImageModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && imageModal.classList.contains('show')) {
+                closeImageModal();
+            }
+        });
+
+        // ===== 筛选器事件 =====
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.dataset.filter;
+                if (filter === currentFilter) return;
+                currentFilter = filter;
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                if (viewCity.classList.contains('active')) {
+                    if (currentProvince && currentGroupCities.length) {
+                        const province = PROVINCE_DATA[currentProvince];
+                        const group = province.groups.find(g => g.name === currentGroupName);
+                        if (group) renderCityGrid(currentProvince, group);
+                    } else {
+                        renderLLYGrid();
+                    }
+                }
+            });
+        });
+
+        galleryFilterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.dataset.filter;
+                if (filter === currentGalleryFilter) return;
+                currentGalleryFilter = filter;
+                galleryFilterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderGalleryGrid();
+            });
+        });
+
+        // ===== 搜索事件 =====
+        searchInput.addEventListener('input', function() {
+            if (viewCity.classList.contains('active')) {
+                if (currentProvince && currentGroupCities.length) {
+                    const province = PROVINCE_DATA[currentProvince];
+                    const group = province.groups.find(g => g.name === currentGroupName);
+                    if (group) renderCityGrid(currentProvince, group);
+                } else {
+                    renderLLYGrid();
+                }
+            }
+        });
+
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            clearSearch.classList.remove('visible');
+            if (viewCity.classList.contains('active')) {
+                if (currentProvince && currentGroupCities.length) {
+                    const province = PROVINCE_DATA[currentProvince];
+                    const group = province.groups.find(g => g.name === currentGroupName);
+                    if (group) renderCityGrid(currentProvince, group);
+                } else {
+                    renderLLYGrid();
+                }
+            }
+            searchInput.focus();
+        });
+
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (this.value) {
+                    this.value = '';
+                    clearSearch.classList.remove('visible');
+                    if (viewCity.classList.contains('active')) {
+                        if (currentProvince && currentGroupCities.length) {
+                            const province = PROVINCE_DATA[currentProvince];
+                            const group = province.groups.find(g => g.name === currentGroupName);
+                            if (group) renderCityGrid(currentProvince, group);
+                        } else {
+                            renderLLYGrid();
+                        }
+                    }
+                } else {
+                    this.blur();
+                }
+            }
+        });
+
+        // ===== 返回事件 =====
+        backToProvince.addEventListener('click', () => switchView('viewProvince'));
+        backToProvinceFromGallery.addEventListener('click', () => switchView('viewProvince'));
+
+        backToGroup.addEventListener('click', () => {
+            if (currentProvince && PROVINCE_DATA[currentProvince]) openGroupView(currentProvince);
+            else switchView('viewProvince');
+        });
+
+        backToCity.addEventListener('click', () => {
+            if (currentProvince && PROVINCE_DATA[currentProvince] && currentGroupName) {
+                const province = PROVINCE_DATA[currentProvince];
+                const groupIdx = province.groups.findIndex(g => g.name === currentGroupName);
+                if (groupIdx !== -1) openCityView(currentProvince, groupIdx);
+                else openGroupView(currentProvince);
+            } else {
+                openLLYView();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (imageModal.classList.contains('show')) {
+                    closeImageModal();
+                    return;
+                }
+                if (viewDetail.classList.contains('active')) backToCity.click();
+                else if (viewCity.classList.contains('active')) {
+                    if (searchInput.value) {
+                        searchInput.value = '';
+                        clearSearch.classList.remove('visible');
+                        if (currentProvince && currentGroupCities.length) {
+                            const province = PROVINCE_DATA[currentProvince];
+                            const group = province.groups.find(g => g.name === currentGroupName);
+                            if (group) renderCityGrid(currentProvince, group);
+                        } else {
+                            renderLLYGrid();
+                        }
+                        return;
+                    }
+                    backToGroup.click();
+                } else if (viewGroup.classList.contains('active')) backToProvince.click();
+                else if (viewGallery.classList.contains('active')) backToProvinceFromGallery.click();
+            }
+        });
+
+        // ===== 启动 =====
+        renderProvinces();
+        showToast('🌍 911星球 · 探索城市故事');
+        console.log('📦 数据加载完成');
+        console.log('🖼️ 一些评论共 ' + GALLERY_IMAGES.length + ' 张图片');
+        console.log('⭐ LLY专区共 ' + LLY_DATA.length + ' 个投稿');
+        console.log('📍 普通省份共 ' + Object.keys(PROVINCE_DATA).length + ' 个');
+        console.log('🎵 背景音乐：bgm.mp3/dxy.mp3');
+        console.log('🖼️ 背景图片：images/xingkong.jpg');
+    </script>
+
+</body>
+</html>
